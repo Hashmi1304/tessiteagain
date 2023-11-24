@@ -1,0 +1,340 @@
+{% capture collectionTabs %}
+<style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  /* CSS styles for the collection tabs section */  
+ 
+  .collection-tabs {
+    margin-bottom: 20px;
+ 
+  }
+  .collection__view-all a{
+    margin-top: 10px;
+    background-color: black;
+    color: #e6ab10;
+
+  }
+  .collection__view-all a:hover{
+    background-color: #e6ab10;
+    color: black;
+  }
+  .collection-tabs ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+  }
+
+  .collection-tabs ul li {
+    margin-right: 25px;
+    margin-top: 10px;
+  }
+
+  .collection-tabs ul li a {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    Font-size: 20px;
+    color: Black;
+    Fon-size: 1.6rem !important;
+    font-weight: 900;
+    text-decoration: none;
+    float: right;
+  }
+  .collection-tabs ul li a:hover{
+    color: #e6ab10;
+  }
+  .collection-tabs ul li a.active{
+    color: #e6ab10;
+  }
+      .collection-tabs ul li a:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background-color: #e6ab10; /* underline color */
+      transition: width 0.3s ease, left 0.3s ease;
+    }
+    
+    .collection-tabs ul li a:hover:after {
+      width: 100%;
+      left: 0;
+    }
+    
+    .collection-tabs ul li a:focus:after,
+    .collection-tabs ul li a.active:after {
+      width: 100%;
+      left: 0;
+    }
+  
+   .collection-tabs ul li a div{
+     color:  #f1f1f1;
+     float: left;
+     padding-right: 8px;
+     padding-bottom: 3px;
+     font-size: 17px;
+   }
+  .collection-tabs .tab-content {
+    display: none;
+  }
+
+  .collection-tabs .tab-content.active {
+    display: block;
+  }
+
+  .product-grid .product {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .product-grid .product img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+.product-grid {
+    display: flex;
+    justify-content: center;
+}
+  .product-grid .product {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    width: 19%;
+    margin: 5px;
+}
+@media (max-width:750px) {
+   .product-grid .product {
+    border: 1px solid #ccc;
+    padding: 10px !important;
+    text-align: center !important;
+    width: 45% !important;
+    margin: 5px;
+}
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+}
+  @media (min-width:760px) and (max-width:950px){
+   .product-grid .product {
+    border: 1px solid #ccc;
+    padding: 10px !important;
+    text-align: center !important;
+    width: 30% !important;
+    margin: 5px;
+}
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+}
+ 
+</style>
+
+</style>
+<div class="collection-tabs">
+  <ul>
+    {% for block in section.blocks limit: section.blocks.size %}
+    {% if block.settings.title != blank %}
+    <li>
+      <a class="tab-link{% if forloop.first %} active{% endif %}" href="#collection-{{ block.id }}">{{ block.settings.title }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+
+  
+  {% for block in section.blocks limit: section.blocks.size %}
+  {% assign collection = collections[block.settings.collection] %}
+  <div id="collection-{{ block.id }}" class="tab-content{% if forloop.first %} active{% endif %}">
+    {% if block.settings.collection != blank and collection.products.size > 0 %}
+    <div class="product-grid">
+      {% for product in collection.products limit: section.settings.rows %}
+      <div class="product">
+        <a href="{{ product.url }}" title="{{ product.title }}">
+          <img src="{{ product.featured_image.src | img_url: 'medium' }}" alt="{{ product.featured_image.alt | escape }}">
+        </a>
+        <h4>{{ product.title }}</h4>
+        <p>{{ product.price | money }}</p>
+        <!-- Add more product details as needed -->
+      </div>
+     
+      {% endfor %} 
+    </div>
+
+    <div class="center collection__view-all scroll-trigger animate--slide-in">
+        <a href="{{ collection.url }}" class="button" aria-label="View all products in the Products collection">
+          View all
+        </a>
+      </div>
+    
+    {% else %}
+    <p>No products available</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var tabs = document.querySelectorAll(".collection-tabs .tab-link");
+    var tabContents = document.querySelectorAll(".collection-tabs .tab-content");
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener("click", function(event) {
+        event.preventDefault();
+        var target = this.getAttribute("href");
+
+        tabs.forEach(function(tab) {
+          tab.classList.remove("active");
+        });
+
+        tabContents.forEach(function(content) {
+          content.classList.remove("active");
+        });
+
+        this.classList.add("active");
+        document.querySelector(target).classList.add("active");
+      });
+    });
+  });
+</script>
+{% endcapture %}
+
+{{ collectionTabs | strip_newlines | remove: "  " | remove: "	" }}
+
+{% schema %}
+{
+  "name": "Tabs + Products",
+  "class": "index-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Appearance Section ==="
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mobile",
+      "label": "Hide Section in Mobile?",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Appearance Tabs ==="
+    },
+    {
+      "type": "select",
+      "id": "tab-style",
+      "label": "Tab Style",
+      "default": "stl1",
+      "info": "[Preview tab style](https://www.adornthemes.com/different-tab-styles/)",
+      "options": [
+        {
+          "value": "stl1",
+          "label": "Bottom Border or Simple Text"
+        },
+        {
+          "value": "stl2",
+          "label": "Square Solid or Border"
+        },
+        {
+          "value": "stl3",
+          "label": "Rounded Solid or Border"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "Set tab font size and colors from Theme Settings-> Fonts and Colors -> Product Tabs Home"
+    },
+    {
+      "type": "header",
+      "content": "Appearance Grid ==="
+    },
+    {
+      "type": "checkbox",
+      "id": "pr_carousel",
+      "label": "Enable Products Carousel",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Desktop",
+      "default": 4,
+      "min": 2,
+      "max": 7,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "tablet-grid",
+      "label": "Tablet",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile-grid",
+      "label": "Mobile",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "rows",
+      "label": "Number of products to show",
+      "default": "5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "featured_collection_tabs",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection Tab Name",
+          "default": "Tab Name",
+          "info": "Use <strong>text here</strong> to make headings bold"
+        },
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "Select Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "1 - Tabs + Products",
+      "blocks": [
+        {
+          "type": "featured_collection_tabs"
+        },
+        {
+          "type": "featured_collection_tabs"
+        },
+        {
+          "type": "featured_collection_tabs"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
